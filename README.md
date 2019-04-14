@@ -73,5 +73,8 @@ Publish a directory.
 xnippet pub easy-router/
 
 # Add will download the directory.
-xnippet add easy-router
+xnippet add @jeswin/easy-router
+
+# Saves into vendor/easy-router
+xnippet add @jeswin/easy-router vendor/
 ```
