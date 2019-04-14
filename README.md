@@ -1,6 +1,6 @@
 # xnippet
 
-Snippets Manager. Pronounced shnee-pet.
+Snippets Manager. Pronounced shni-pet.
 
 Add a file snippet from the user 'jeswin' to the current project.
 This also creates an xnippet.json file to track the snippet versions.
