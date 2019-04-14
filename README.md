@@ -1,0 +1,2 @@
+# xnippet
+Snippets Manager
