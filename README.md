@@ -2,7 +2,7 @@
 
 Platform-agnostic Snippets Manager. Pronounced shni-pet.
 
-The snippets are expected to be checked into the current codebase.
+The snippets are expected to be committed into your source control. xnippet tracks all downloaded snippets in xnippet.json. This file (xnippet.json) is also expected to be committed to your source control.
 
 ## Downloading snippets
 
