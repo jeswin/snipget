@@ -4,6 +4,15 @@ Platform-agnostic Snippets Manager. Pronounced shni-pet.
 
 The snippets are expected to be committed into your source control. xnippet tracks all downloaded snippets in xnippet.json. This file (xnippet.json) is also expected to be committed to your source control.
 
+## Installation
+
+Download binaries for your system. Currently only 64-bit Linux, OSX and Windows platforms are supported. 
+
+Links:
+- [Linux](https://xnippet.com/download/linux)
+- [Mac OS](https://xnippet.com/download/osx)
+- [Windows](https://xnippet.com/download/windows)
+
 ## Downloading snippets
 
 ```sh
