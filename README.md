@@ -1,9 +1,8 @@
 # xnippet
 
-Snippets Manager. Pronounced shni-pet.
+Platform-agnostic Snippets Manager. Pronounced shni-pet.
 
-Add a file snippet from the user 'jeswin' to the current project.
-This also creates an xnippet.json file to track the snippet versions.
+The snippets are expected to be checked into the current codebase.
 
 ## Downloading snippets
 
@@ -32,6 +31,25 @@ Download without creating xnippet.json or adding to it.
 # This just downloads the file. Version is not maintained.
 xnippet get @jeswin/router.js vendor/utils/
 ```
+
+## Updating and Deleting Snippets
+
+Update a specific snippet to the latest version.
+
+```sh
+# This gets the latest published version of the snippet
+xnippet update @jeswin/router.js
+```
+
+Update all snippets in the current project. Based on xnippet.json
+
+```sh
+# This fetches all snippets found in xnippet.json
+xnippet update --all
+```
+
+To delete a snippet, remove the file from your source code.
+And delete the corresponding entry in xnippet.json.
 
 ## Publishing
 
