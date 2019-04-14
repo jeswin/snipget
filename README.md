@@ -56,11 +56,11 @@ Logout
 xnippet logout
 ```
 
-Publish a file snippet. Assigns the smallest version 0.0.1 if new. If the snippet already exists, the current patch version is updated.
+Publish a file snippet. The current patch version is updated.
 
 ```sh
 # Increments the patch version as well.
-# eg: v1.4.4 -> v1.4.5. Or creates v0.0.1 if new.
+# eg: v1.4.4 -> v1.4.5. Or creates v0.0.1 if it's a new snippet.
 xnippet pub router.js
 ```
 
