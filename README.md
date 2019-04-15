@@ -62,7 +62,14 @@ And delete the corresponding entry in xnippet.json.
 
 ## Publishing
 
-Login to xnippet. Only required if you're publishing snippets.
+Create an account. Required only if you're publishing snippets.
+
+```sh
+# You will be asked for password. xnippet signup [username]
+xnippet signup kai
+```
+
+Login to xnippet. 
 
 ```sh
 # Login. Will be asked to create an account if it doesn't exist.
@@ -81,6 +88,13 @@ Logout
 ```sh
 # Deletes the session cookie. You'll need to login now to publish.
 xnippet logout
+```
+
+Logout of all sessions on all machines.
+
+```sh
+# Deletes all sessions from the server for this user. You need to be online.
+xnippet logout --all
 ```
 
 Publish a file snippet. The current patch version is updated.
