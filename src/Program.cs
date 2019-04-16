@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using xnippet.Commands;
+using snipget.Commands;
 
-namespace xnippet
+namespace snipget
 {
   class Program
   {
