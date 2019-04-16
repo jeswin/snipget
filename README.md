@@ -1,6 +1,6 @@
 # snipget
 
-Platform-agnostic Snippets Manager. Pronounced shni-pet.
+Platform-agnostic Snippets Manager.
 
 The snippets are expected to be committed into your source control. snipget tracks all downloaded snippets in snipget.json. This file (snipget.json) is also expected to be committed to your source control.
 
@@ -133,12 +133,49 @@ snipget add @jeswin/easy-router
 snipget add @jeswin/easy-router vendor/
 ```
 
-Delete a snippet.
+Get versions of a snippet.
+
+```sh
+# Lists all available versions of the snippet.
+snipget versions router.js
+```
+
+Delete a version of a snippet. If it was the latest, the previous version becomes current.
+
+```sh
+# Delete the version 1.4.0.
+snipget del router.js@1.4.0
+```
+
+Delete all versions of a snippet. Use caution.
 
 ```sh
 # Delete a file
-snipget del router.js
+snipget del router.js --all
 
 # Or maybe a directory
-snipget del easy-router
+snipget del easy-router --all
 ```
+
+# Private Snippets
+
+You need to first create a key pair to create and download Private Snippets.
+The keys are stored under the .snipget directory within your home directory. The default key is named 'default'.
+
+```sh
+snipget keygen
+```
+
+You can create multiple keys with the 'keygen' command.
+
+```sh
+snipget keygen myworkkey
+```
+
+Delete keys with the 'keyremove' command.
+
+```sh
+snipget keyremove myworkkey
+```
+
+
