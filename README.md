@@ -93,8 +93,16 @@ snipget logout
 Logout of all sessions on all machines.
 
 ```sh
-# Deletes all sessions from the server for this user. You need to be online.
+# Deletes all sessions (from all machines) for this user. You need to be online.
 snipget logout --all
+```
+
+Change username. The existing username now becomes available for other people to claim. Use this feature with caution, since many links will get orphaned.
+
+```sh
+# Rename the logged in user.
+# snipget rename <current_username> <new_username>
+snipget rename alice alicia
 ```
 
 Publish a file snippet. The current patch version is updated.
@@ -144,17 +152,66 @@ Delete a version of a snippet. If it was the latest, the previous version become
 
 ```sh
 # Delete the version 1.4.0.
-snipget del router.js@1.4.0
+snipget rm router.js@1.4.0
 ```
 
 Delete all versions of a snippet. Use caution.
 
 ```sh
 # Delete a file
-snipget del router.js --all
+snipget rm router.js --all
 
 # Or maybe a directory
-snipget del easy-router --all
+snipget rm easy-router --all
+```
+
+# Teams
+
+You can create a team and add more people to it. You'll be the admin. Both admins and normal users can publish snippets, but only admins can add other users.
+
+Creating a Team.
+
+```sh
+# Create a team called foodevs
+snipget team foodevs
+```
+
+You can add other admins and normal users.
+
+```sh
+# Add alice as admin
+snipet team foodevs --admin alice
+
+# Add bob as a normal user
+snipget team foodevs --user bob
+```
+
+Or remove them. You cannot remove yourself, but another admin can.
+
+```sh
+# Remove alice as admin
+snipet team foodevs --rm alice
+```
+
+All published snippets live under the team's namespace.
+
+```sh
+# Download snippets from the team 'foodevs'
+snipget add @foodevs/router.js
+```
+
+# Publishing in Teams
+
+Publishing team snippets is very similar to what we saw earlier, you'd just need to specify the 'team' option. All the other commands work as well.
+
+```sh
+# Publishing a snippet
+snipget pub router.js --team foodevs
+```
+
+```sh
+# Removing
+snipet rm router.js --team foodevs
 ```
 
 # Private Snippets
@@ -163,19 +220,19 @@ You need to first create a key pair to create and download Private Snippets.
 The keys are stored under the .snipget directory within your home directory. The default key is named 'default'.
 
 ```sh
-snipget keygen
+snipget key
 ```
 
-You can create multiple keys with the 'keygen' command.
+You can create multiple keys with the 'key' command.
 
 ```sh
-snipget keygen myworkkey
+snipget key myworkkey
 ```
 
-Delete keys with the 'keyremove' command.
+Delete keys with the 'rm' option.
 
 ```sh
-snipget keyremove myworkkey
+snipget key --rm myworkkey
 ```
 
 
