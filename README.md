@@ -16,15 +16,27 @@ Links:
 ## Downloading snippets
 
 ```sh
-# Gets the latest version of this snippet.
+# Adds the latest version of this snippet.
 snipget add @jeswin/router.js
 ```
 
 Add a specific version of the snippet
 
 ```sh
-# Gets a specific version. Error if not found.
+# Adds a specific version. Error if not found.
 snipget add @jeswin/router.js@1.3.4
+```
+
+Add the latest snippet for a fixed major/minor version
+
+```sh
+# Get the latest snippet conforming to major version 2.
+# Maybe v2.4.1
+snipget add @jeswin/router@2
+
+# Get the latest snippet conforming to major version 2, minor version 3.
+# Maybe v2.3.6
+snipget add @jeswin/router@2.3
 ```
 
 Add to a specific location.
