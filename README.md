@@ -241,10 +241,31 @@ You can create multiple keys with the 'key' command.
 snipget key myworkkey
 ```
 
+You can print a public key with the 'pubkey' command.
+
+```sh
+# Print the default key
+snipget pubkey
+
+# Print a named key
+snipget pubkey myworkkey
+```
+
 Delete keys with the 'rm' option.
 
 ```sh
-snipget key --rm myworkkey
+snipget key myworkkey --rm
 ```
 
+Now to add a new private snippet, add a 'key' option to the add command. This encrypts the snippet with your default key. Once a snippet has been add as an encrypted file, it cannot be updated an an unencrypted file; you'll have to remove the snippet and start afresh.
+
+```sh
+snipget add router.js --key
+```
+
+You can use a different key, if you wish.
+
+```sh
+snipget add router.js --key myworkkey
+```
 
