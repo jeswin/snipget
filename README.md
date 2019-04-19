@@ -257,15 +257,14 @@ Delete keys with the 'rm' option.
 snipget key myworkkey --rm
 ```
 
-Now to add a new private snippet, add a 'key' option to the add command. This encrypts the snippet with your default key. Once a snippet has been add as an encrypted file, it cannot be updated an an unencrypted file; you'll have to remove the snippet and start afresh.
+Now to publish a new private snippet, add a 'key' option to the pub command. This encrypts the snippet with your default key. Once a snippet has been add as an encrypted file, it cannot be updated as an unencrypted file; you'll have to remove the snippet and start afresh.
 
 ```sh
-snipget add router.js --key
+snipget pub router.js --key
 ```
 
-You can use a different key, if you wish.
+Of course, you can specify a named key as well.
 
 ```sh
-snipget add router.js --key myworkkey
+snipget pub router.js --key myworkkey
 ```
-
