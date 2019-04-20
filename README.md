@@ -4,6 +4,12 @@ Platform-agnostic Snippets Manager.
 
 The snippets are expected to be committed into your source control. snipget tracks all downloaded snippets in snipget.json. This file (snipget.json) is also expected to be committed to your source control.
 
+## Why?
+
+- Package management approaches (such as npm) result in 100s of MBs of downloads
+- Semver ranges are a security risk. The next patch version could be malicious.
+- We need to get back to smaller, self contained libs. IMHO.
+
 ## Installation
 
 Download binaries for your system. Currently only 64-bit Linux, OSX and Windows platforms are supported. 
@@ -107,14 +113,6 @@ Logout of all sessions on all machines.
 ```sh
 # Deletes all sessions (from all machines) for this user. You need to be online.
 snipget logout --all
-```
-
-Change username. The existing username now becomes available for other people to claim. Use this feature with caution, since many links will get orphaned.
-
-```sh
-# Rename the logged in user.
-# snipget rename <current_username> <new_username>
-snipget rename alice alicia
 ```
 
 Publish a file snippet. The current patch version is updated.
@@ -226,45 +224,51 @@ snipget pub router.js --team foodevs
 snipet rm router.js --team foodevs
 ```
 
-# Private Snippets
+# Private Snippets (Non-MVP features)
 
-You need to first create a key pair to create and download Private Snippets.
-The keys are stored under the .snipget directory within your home directory. The default key is named 'default'.
-
-```sh
-snipget key
-```
-
-You can create multiple keys with the 'key' command.
-
-```sh
-snipget key myworkkey
-```
+A pair of cryptographic keys is already created for you when you login. This key named 'default' stored in the file 'default.key' under the .snipget directory inside your home directory.
 
 You can print a public key with the 'pubkey' command.
 
 ```sh
-# Print the default key
+# If you're alice, prints alice:XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs=
 snipget pubkey
-
-# Print a named key
-snipget pubkey myworkkey
 ```
 
-Delete keys with the 'rm' option.
+Now to publish a new private snippet, you need to obtain the public keys of people who should be given access. Then use the 'key' option while publishing to allow access. Your own key is automatically added.
 
 ```sh
-snipget key myworkkey --rm
+# Upload an encrypted snippet readable by you, alice and bob
+snipget pub router.js \
+--key alice:XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
+--key bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
-Now to publish a new private snippet, add a 'key' option to the pub command. This encrypts the snippet with your default key. Once a snippet has been add as an encrypted file, it cannot be updated as an unencrypted file; you'll have to remove the snippet and start afresh.
+Snipget itself will not be able to decrypt the file contents since the original unencrypted content is never sent to snipget servers.
+
+To add a new pubkey to an existing snippet, use the addkey command.
 
 ```sh
-snipget pub router.js --key
+snipget addkey router.js bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
-Of course, you can specify a named key as well.
+To remove a pubkey to an existing snippet, use the 'rmkey' command.
 
 ```sh
-snipget pub router.js --key myworkkey
+snipget rmkey router.js bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+```
+
+Similarly, encryption works for team namespaces as well. Here's how to publish an encrypted snippet within a team. Team members will need their keys added to be able to view the file contents.
+
+```sh
+snipget pub router.js \
+--team foodevs
+--key XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
+--key IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+```
+
+To regenerate the keys use the keygen command. Use this with caution since you'll lose access to snippets encrypted with the previous key.
+
+```sh
+snipget keygen
 ```
