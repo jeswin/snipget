@@ -250,7 +250,7 @@ You can add other admins and normal users.
 
 ```sh
 # Add alice as admin
-snipet post teams/foodevs/admins alice
+snipget post teams/foodevs/admins alice
 
 # Add bob as a normal user
 snipget post teams/foodevs/users bob
@@ -281,7 +281,7 @@ snipget post foodevs router.js
 
 ```sh
 # Removing
-snipet delete foodevs/router.js
+snipget delete foodevs/router.js
 ```
 
 # Private Snippets (Non-MVP features)
