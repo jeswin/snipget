@@ -17,7 +17,7 @@ namespace snipget
       {
         var commandName = args[0].ToLower();
         var commandArgs = args.Skip(1);
-
+        
         var command =
           commandName == "add" ? new AddCommand() :
           commandName == "get" ? new GetCommand() :

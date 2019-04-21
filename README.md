@@ -59,6 +59,28 @@ Download without creating snipget.json or adding to it.
 snipget get @jeswin/router.js vendor/utils/
 ```
 
+# Using Curl
+
+Snipget snippets are downloadable using wget or curl. Directories are stored as a a compressed archive (tar.gz).
+
+To download the latest @jeswin/router.js use the following curl command.
+
+```sh
+curl https://snipget.com/jeswin/latest/router.js --output utils/router.js
+```
+
+To download a specific version use:
+
+```sh
+curl https://snipget.com/jeswin/1.3.0/router.js --output utils/router.js
+```
+
+To download a directory:
+
+```sh
+curl https://snipget.com/jeswin/3.0.1/webtools.zip | tar xvf
+```
+
 ## Updating and Deleting Snippets
 
 Update a specific snippet to the latest version.
@@ -226,36 +248,45 @@ snipet rm router.js --team foodevs
 
 # Private Snippets (Non-MVP features)
 
-A pair of cryptographic keys is already created for you when you login. This key named 'default' stored in the file 'default.key' under the .snipget directory inside your home directory.
+A pair of ed25519 cryptographic keys is already created for you when you login. This key named 'default' stored in the file 'default.key' under the .snipget directory inside your home directory.
 
-You can print a public key with the 'pubkey' command.
+You can print a public key with the 'publickey' command.
 
 ```sh
 # If you're alice, prints alice:XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs=
-snipget pubkey
+snipget publickey
 ```
 
-Now to publish a new private snippet, you need to obtain the public keys of people who should be given access. Then use the 'key' option while publishing to allow access. Your own key is automatically added.
+Now to publish a new private snippet, you need to obtain the public keys of people who should be given access. Then use the 'key' option while publishing to allow access. Your own default key is automatically added.
+
+The key option can either
+- public_key
+- identifier@public_key
+
+It is strongly recommended that you add an identifier, since it allows you to manage keys later.
 
 ```sh
 # Upload an encrypted snippet readable by you, alice and bob
 snipget pub router.js \
---key alice:XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
---key bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+--key alice@XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
+--key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
 Snipget itself will not be able to decrypt the file contents since the original unencrypted content is never sent to snipget servers.
 
-To add a new pubkey to an existing snippet, use the addkey command.
+To add a new public key to an existing snippet, use the addkey command.
 
 ```sh
-snipget addkey router.js bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+snipget addkey router.js \
+--key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+--key carol@klajshdfs/HSDFSkjsRzuUsNeQ21Mu106w1e0tlqU=
 ```
 
-To remove a pubkey to an existing snippet, use the 'rmkey' command.
+To remove someone's access to an existing snippet, use the 'rmkey' command.
 
 ```sh
-snipget rmkey router.js bob:IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+snipget rmkey router.js \
+--key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
 Similarly, encryption works for team namespaces as well. Here's how to publish an encrypted snippet within a team. Team members will need their keys added to be able to view the file contents.
@@ -263,12 +294,13 @@ Similarly, encryption works for team namespaces as well. Here's how to publish a
 ```sh
 snipget pub router.js \
 --team foodevs
---key XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
---key IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+--key alice@XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
+--key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
-To regenerate the keys use the keygen command. Use this with caution since you'll lose access to snippets encrypted with the previous key.
+You can create additional keys as well. While downloading encrypted snippets all keys are tried until a match is found, or all keys are exhausted. The following example creates a myworkkey file in the .snipget directory.
 
 ```sh
-snipget keygen
+snipget createkey myworkkey
 ```
+
