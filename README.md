@@ -1,4 +1,4 @@
-# snipget
+# snipget (Proposed design)
 
 Platform-agnostic Snippets Manager.
 
