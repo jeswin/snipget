@@ -1,8 +1,6 @@
-# snipget (Proposed design)
+# snipget
 
-Platform-agnostic Snippets Manager.
-
-The snippets may be committed into your source control, or not; depending on size constraints. It might make sense for small files such as 'capitalize.go' to be added to your source-code files and be committed into your version control. snipget tracks all downloaded snippets in file named 'snipget.json'. This file (snipget.json) is also expected to be committed to your source control.
+Platform-agnostic Snippets Manager. 
 
 ## Why?
 
@@ -15,17 +13,22 @@ The snippets may be committed into your source control, or not; depending on siz
 Download binaries for your system. Currently only 64-bit Linux, OSX and Windows platforms are supported. 
 
 Links:
-- [Linux](https://snipget.com/download/linux)
-- [Mac OS](https://snipget.com/download/osx)
-- [Windows](https://snipget.com/download/windows)
+- [Linux](https://snipget.org/download/linux)
+- [Mac OS](https://snipget.org/download/osx)
+- [Windows](https://snipget.org/download/windows)
 
 ## Downloading snippets
 
-All snippets are namespaced by the author's or team's id: author_id/snippet_name
+Let's get started. Add the first snippet.
 
 ```sh
-# Adds the latest version of this snippet.
+# Adds the latest version of this snippet. Saved in the current directory.
 snipget get kai/router.js
+```
+
+```sh
+# Saved in the utils directory (as utils/router.js).
+snipget get kai/router.js utils
 ```
 
 Add a specific version of the snippet
@@ -47,60 +50,64 @@ snipget get kai/2.3/router
 snipget get kai/2/router.js
 ```
 
-Add to a specific location.
+Print the contents of the file with curl.
 
 ```sh
-# Saves the snippet in a specific directory. Creates dir if missing.
-snipget get kai/router.js vendor/utils/
-```
-
-Print the contents of the file. Does not add to snipget.json.
-
-```sh
-# Prints the file contents to the console and doesn't save it.
-snipget get kai/router.js --print
+# Prints the file contents to the console.
+curl kai/router.js
 ```
 
 ```sh
-# Lists all available versions of the snippet.
-snipget get kai/~versions/router.js --print
+# Lists all available versions of a snippet.
+curl versions/kai/router.js
 ```
 
-# Restoring all snippets
+## snipget.json
 
-Snipget can restore all snippets from the snipget.json file. The snipget.json file is created when you use snipget add. As we discussed previously, this file must be committed to your version control.
+Snippets downloaded with the 'get' command creates a snipget.json file in the current directory if one doesn't already exist in the current directory or in any of the parent directories. This file is used to track all the snippets used by a project.
+
+To start using snipget for a project, create a blank snipget.json file in the project's base directory. Since this file exists now, all subsequent snipget commands invoked from within the project's path will use this file.
 
 ```sh
+touch snipget.json
+```
+
+## Restoring all snippets
+
+When invoked from a directory containing a snipget.json file, snipget will restore all snippets found in the snipget.json file.
+
+```sh
+# Call from a directory containing a snipget.json file
 snipget restore
 ```
 
-# Using Curl
+## Using curl or wget
 
-Snipget snippets are downloadable using wget or curl. Directories are stored as a a compressed archive (tar.gz).
+All files and directories are downloadable using wget or curl. Directories are stored as a a compressed archive (tar.gz). Note that using wget or curl does not create or update the snipget.json file, which makes managing dependencies harder.
 
 To download kai's latest router.js use the following curl command.
 
 ```sh
-curl https://snipget.com/kai/router.js --output utils/router.js
+curl https://snipget.org/kai/router.js --output utils/router.js
 ```
 
 To download a specific version use:
 
 ```sh
-curl https://snipget.com/kai/1.3.0/router.js --output utils/router.js
+curl https://snipget.org/kai/1.3.0/router.js --output utils/router.js
 ```
 
 To download the latest major version:
 
 ```sh
 # Download the latest with major version 1
-curl https://snipget.com/kai/1/router.js --output utils/router.js
+curl https://snipget.org/kai/1/router.js --output utils/router.js
 ```
 
 To download a directory:
 
 ```sh
-curl https://snipget.com/kai/3.0.1/webtools.tar.gz | tar xvf
+curl https://snipget.org/kai/3.0.1/webtools.tar.gz | tar xvf
 ```
 
 ## Updating and Deleting Snippets
@@ -131,43 +138,39 @@ This updates all snippets to the latest patch versions.
 snipget upgrade --lock minor
 ```
 
-## Authenticating
+## Authentication
 
-Authentication is required if you want to publish and update snippets.
-
-Create an account.
+Create an account. If the username is available, this creates an ed25519 key pair in $HOME/.snipget/kai.secret.
 
 ```sh
-# You will be asked for password. snipget signup [username]
-snipget signup 
+snipget signup kai
 ```
 
-Login to snipget. 
+Your public key can now be seen by everyone.
 
 ```sh
-# Login. Will be asked to create an account if it doesn't exist.
-snipget login
+snipget get keys/kai
 ```
 
-Who am I?
+To change your key, signup again with the overwrite flag.
 
 ```sh
-# Returns the logged in username
-snipget whoami
+snipget signup jeswin --recreate
 ```
 
-Logout
+You can create as many accounts as you want on the same machine.
 
 ```sh
-# Deletes the session cookie. You'll need to login now to publish.
-snipget logout
+# Create a user named jeswin. Now you have two ids, kai and jeswin. 
+# The newly created id will become the default identity.
+snipget signup jeswin
 ```
 
-Logout of all sessions on all machines.
+If you have multiple identities, switch your default identity with the 'id' command.
 
 ```sh
-# Deletes all sessions (from all machines) for this user. You need to be online.
-snipget logout --all
+# Switch id back to kai.
+snipget id kai
 ```
 
 ## Publishing
@@ -235,18 +238,24 @@ snipget delete kai/router.js --all
 snipget delete kai/easy-router --all
 ```
 
-# Teams
+## Teams
 
 You can create a team and add more people to it. You'll be the admin. Both admins and normal users can publish snippets, but only admins can add other users.
 
-Creating a Team.
+Creating a Team with the default identity.
 
 ```sh
 # Create a team called foodevs
 snipget post teams foodevs
 ```
 
-You can add other admins and normal users.
+If you have multiple identities and you don't want to use the default id, you can explicitly specify the id. 
+
+```sh
+snipget post teams foodevs --id jeswin
+```
+
+You're already an admin. You can add admins and normal users.
 
 ```sh
 # Add alice as admin
@@ -270,7 +279,7 @@ All published snippets live under the team's namespace.
 snipget get foodevs/router.js
 ```
 
-# Publishing in Teams
+## Publishing in Teams
 
 Publishing team snippets is very similar to what we saw earlier.
 
@@ -284,66 +293,25 @@ snipget post foodevs router.js
 snipget delete foodevs/router.js
 ```
 
-# Private Snippets (Non-MVP features)
-
-A pair of ed25519 cryptographic keys is already created for you when you login. This key named 'default' stored in the file 'default.key' under the .snipget directory inside your home directory.
-
-You can print a public key with the 'publickey' command.
+Teams can publish private snippets. Only members of the team foodevs will be able to read the file contents.
 
 ```sh
-# If you're alice, prints alice:XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs=
-snipget publickey
+snipget post foodevs router.js --private
 ```
 
-Now to publish a new private snippet, you need to obtain the public keys of people who should be given access. Then use the 'key' option while publishing to allow access. Your own default key is automatically added.
+## Snipget repository
 
-The key option can either
-- public_key
-- identifier@public_key
+snipget.org is the default snipget repository. 
 
-It is strongly recommended that you add an identifier, since it allows you to manage keys later.
+But it could be overridden in two ways.
+- snipget.json file
+- SNIPGET_HOST environment variable.
 
-```sh
-# Upload an encrypted snippet readable by you, alice and bob
-snipget pub router.js \
---key alice@XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
---key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
-```
+Here's an example snipget.json file.
 
-Snipget itself will not be able to decrypt the file contents since the original unencrypted content is never sent to snipget servers.
-
-To add a new public key to an existing snippet, use the addkey command.
-
-```sh
-# Add two keys (and call them bob and carol)
-snipget getkey router.js bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU= \
-carol@klajshdfs/HSDFSkjsRzuUsNeQ21Mu106w1e0tlqU=
-```
-
-To remove someone's access to an existing snippet, use the 'rmkey' command.
-
-```sh
-snipget rmkey router.js IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
-```
-
-You can also remove someone with the identifier.
-
-```sh
-snipget rmkey router.js IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
-```
-
-Similarly, encryption works for team namespaces as well. Here's how to publish an encrypted snippet within a team. Team members will need their keys added to be able to view the file contents.
-
-```sh
-snipget pub router.js \
---team foodevs
---key alice@XJliwwyUkfCynOSx8++N8H/YP1ft31r6ptwvG6yHjLs= \
---key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
-```
-
-You can create additional keys as well. While downloading encrypted snippets all keys are tried until a match is found, or all keys are exhausted. The following example creates a myworkkey file in the .snipget directory.
-
-```sh
-snipget createkey myworkkey
+```json
+{
+  "snipgetHost": "snipget.example.com",
+}
 ```
 
