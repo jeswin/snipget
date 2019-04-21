@@ -2,13 +2,13 @@
 
 Platform-agnostic Snippets Manager.
 
-The snippets are expected to be committed into your source control. snipget tracks all downloaded snippets in snipget.json. This file (snipget.json) is also expected to be committed to your source control.
+The snippets may be committed into your source control, or not; depending on size constraints. It might make sense for small files such as 'capitalize.go' to be added to your source-code files and be committed into your version control. snipget tracks all downloaded snippets in file named 'snipget.json'. This file (snipget.json) is also expected to be committed to your source control.
 
 ## Why?
 
 - Package management approaches (such as npm) result in 100s of MBs of downloads
 - Semver ranges are a security risk. The next patch version could be malicious.
-- We need to get back to smaller, self contained libs. IMHO.
+- We need to get back to smaller, self contained snippets and libs.
 
 ## Installation
 
@@ -21,64 +21,86 @@ Links:
 
 ## Downloading snippets
 
+All snippets are namespaced by the author's or team's id: author_id/snippet_name
+
 ```sh
 # Adds the latest version of this snippet.
-snipget add @jeswin/router.js
+snipget get kai/router.js
 ```
 
 Add a specific version of the snippet
 
 ```sh
-# Adds a specific version. Error if not found.
-snipget add @jeswin/router.js@1.3.4
+# Adds a specific version.
+snipget get kai/1.3.4/router.js
 ```
 
 Add the latest snippet for a fixed major/minor version
 
 ```sh
-# Get the latest snippet conforming to major version 2.
-# Maybe v2.4.1
-snipget add @jeswin/router@2
-
 # Get the latest snippet conforming to major version 2, minor version 3.
 # Maybe v2.3.6
-snipget add @jeswin/router@2.3
+snipget get kai/2.3/router
+
+# Get the latest snippet conforming to major version 2.
+# Maybe v2.4.1
+snipget get kai/2/router.js
 ```
 
 Add to a specific location.
 
 ```sh
 # Saves the snippet in a specific directory. Creates dir if missing.
-snipget add @jeswin/router.js vendor/utils/
+snipget get kai/router.js vendor/utils/
 ```
 
-Download without creating snipget.json or adding to it.
+Print the contents of the file. Does not add to snipget.json.
 
 ```sh
-# This just downloads the file. Version is not maintained.
-snipget get @jeswin/router.js vendor/utils/
+# Prints the file contents to the console and doesn't save it.
+snipget get kai/router.js --print
+```
+
+```sh
+# Lists all available versions of the snippet.
+snipget get kai/~versions/router.js --print
+```
+
+# Restoring all snippets
+
+Snipget can restore all snippets from the snipget.json file. The snipget.json file is created when you use snipget add. As we discussed previously, this file must be committed to your version control.
+
+```sh
+snipget restore
 ```
 
 # Using Curl
 
 Snipget snippets are downloadable using wget or curl. Directories are stored as a a compressed archive (tar.gz).
 
-To download the latest @jeswin/router.js use the following curl command.
+To download kai's latest router.js use the following curl command.
 
 ```sh
-curl https://snipget.com/jeswin/latest/router.js --output utils/router.js
+curl https://snipget.com/kai/router.js --output utils/router.js
 ```
 
 To download a specific version use:
 
 ```sh
-curl https://snipget.com/jeswin/1.3.0/router.js --output utils/router.js
+curl https://snipget.com/kai/1.3.0/router.js --output utils/router.js
+```
+
+To download the latest major version:
+
+```sh
+# Download the latest with major version 1
+curl https://snipget.com/kai/1/router.js --output utils/router.js
 ```
 
 To download a directory:
 
 ```sh
-curl https://snipget.com/jeswin/3.0.1/webtools.zip | tar xvf
+curl https://snipget.com/kai/3.0.1/webtools.tar.gz | tar xvf
 ```
 
 ## Updating and Deleting Snippets
@@ -87,26 +109,37 @@ Update a specific snippet to the latest version.
 
 ```sh
 # This gets the latest published version of the snippet
-snipget update @jeswin/router.js
+snipget get kai/router.js
 ```
 
-Update all snippets in the current project. Based on snipget.json
+Update all snippets found in the snipget.json for the current directory. Thrown an error if snipget.json is not found.
 
 ```sh
-# This fetches all snippets found in snipget.json
-snipget update --all
+# This updates all snippets found in snipget.json to the latest versions.
+snipget upgrade
 ```
 
-To delete a snippet, remove the file from your source code.
-And delete the corresponding entry in snipget.json.
+This updates all snippets while retaining the major version.
 
-## Publishing
+```sh
+snipget upgrade --lock major
+```
 
-Create an account. Required only if you're publishing snippets.
+This updates all snippets to the latest patch versions.
+
+```sh
+snipget upgrade --lock minor
+```
+
+## Authenticating
+
+Authentication is required if you want to publish and update snippets.
+
+Create an account.
 
 ```sh
 # You will be asked for password. snipget signup [username]
-snipget signup kai
+snipget signup 
 ```
 
 Login to snipget. 
@@ -137,12 +170,14 @@ Logout of all sessions on all machines.
 snipget logout --all
 ```
 
-Publish a file snippet. The current patch version is updated.
+## Publishing
+
+Publish a file snippet. The current patch version is updated. The first parameter is your username.
 
 ```sh
 # Increments the patch version as well.
 # eg: v1.4.4 -> v1.4.5. Or creates v0.0.1 if it's a new snippet.
-snipget pub router.js
+snipget post kai router.js
 ```
 
 Publish and update the minor version.
@@ -150,7 +185,7 @@ Publish and update the minor version.
 ```sh
 # Increments the minor version, and sets the patch version to zero.
 # eg: v1.4.4 -> v1.5.0
-snipget pub router.js --minor
+snipget post kai router.js --minor
 ```
 
 Publish and update the major version.
@@ -158,43 +193,46 @@ Publish and update the major version.
 ```sh
 # Increments the major version, and sets others to zero.
 # eg: v0.4.0 -> v1.0.0
-snipget pub router.js --major
+snipget post kai router.js --major
 ```
 
 Publish a directory. 
 
 ```sh
-snipget pub easy-router/
-
-# Add will download the directory.
-snipget add @jeswin/easy-router
-
-# Saves into vendor/easy-router
-snipget add @jeswin/easy-router vendor/
+snipget post kai easy-router/
 ```
 
-Get versions of a snippet.
+Publish and give a different name to the snippet
 
 ```sh
-# Lists all available versions of the snippet.
-snipget versions router.js
+# Download with snipget get kai/super-router.js
+snipget post kai router.js --name super-router.js
 ```
+
+## Deleting
 
 Delete a version of a snippet. If it was the latest, the previous version becomes current.
 
 ```sh
 # Delete the version 1.4.0.
-snipget rm router.js@1.4.0
+snipget delete kai/1.4.0/router.js
+```
+
+Delete the latest version of a snippet. The previous version becomes current.
+
+```sh
+# Delete the latest version
+snipget delete kai/router.js
 ```
 
 Delete all versions of a snippet. Use caution.
 
 ```sh
 # Delete a file
-snipget rm router.js --all
+snipget delete kai/router.js --all
 
-# Or maybe a directory
-snipget rm easy-router --all
+# Delete all versions of a directory
+snipget delete kai/easy-router --all
 ```
 
 # Teams
@@ -205,45 +243,45 @@ Creating a Team.
 
 ```sh
 # Create a team called foodevs
-snipget team foodevs
+snipget post teams foodevs
 ```
 
 You can add other admins and normal users.
 
 ```sh
 # Add alice as admin
-snipet team foodevs --admin alice
+snipet post teams/foodevs/admins alice
 
 # Add bob as a normal user
-snipget team foodevs --user bob
+snipget post teams/foodevs/users bob
 ```
 
 Or remove them. You cannot remove yourself, but another admin can.
 
 ```sh
 # Remove alice as admin
-snipet team foodevs --rm alice
+snipget delete teams/foodevs/admins/alice
 ```
 
 All published snippets live under the team's namespace.
 
 ```sh
-# Download snippets from the team 'foodevs'
-snipget add @foodevs/router.js
+# Download a snippet from the team 'foodevs'
+snipget get foodevs/router.js
 ```
 
 # Publishing in Teams
 
-Publishing team snippets is very similar to what we saw earlier, you'd just need to specify the 'team' option. All the other commands work as well.
+Publishing team snippets is very similar to what we saw earlier.
 
 ```sh
 # Publishing a snippet
-snipget pub router.js --team foodevs
+snipget post foodevs router.js
 ```
 
 ```sh
 # Removing
-snipet rm router.js --team foodevs
+snipet delete foodevs/router.js
 ```
 
 # Private Snippets (Non-MVP features)
@@ -277,16 +315,21 @@ Snipget itself will not be able to decrypt the file contents since the original 
 To add a new public key to an existing snippet, use the addkey command.
 
 ```sh
-snipget addkey router.js \
---key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
---key carol@klajshdfs/HSDFSkjsRzuUsNeQ21Mu106w1e0tlqU=
+# Add two keys (and call them bob and carol)
+snipget getkey router.js bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU= \
+carol@klajshdfs/HSDFSkjsRzuUsNeQ21Mu106w1e0tlqU=
 ```
 
 To remove someone's access to an existing snippet, use the 'rmkey' command.
 
 ```sh
-snipget rmkey router.js \
---key bob@IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+snipget rmkey router.js IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
+```
+
+You can also remove someone with the identifier.
+
+```sh
+snipget rmkey router.js IBOOMgjU9o/GBuPH0cF9RzuUsNeQ21Mu106w1e0tlqU=
 ```
 
 Similarly, encryption works for team namespaces as well. Here's how to publish an encrypted snippet within a team. Team members will need their keys added to be able to view the file contents.
