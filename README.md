@@ -5,7 +5,7 @@ Platform-agnostic Snippets Manager.
 ## Why?
 
 - Package management approaches (such as npm) result in 100s of MBs of downloads
-- Oftne what you need is a single file which you could commit to your version control.
+- What you need is often a single file which you could commit to your version control.
 - Semver ranges are a security risk. The next patch version could be malicious.
 - Getting back to a smaller, self contained code-base is sometimes a good idea.
 
